@@ -755,6 +755,27 @@ const state = {
   monthCursor: null
 };
 
+// ---------- Persistencia de filtros / configuración del usuario ----------
+// Se guarda en el navegador, no en GitHub ni en el Excel.
+const UI_STORAGE_KEY = "dashboard_gruas_ui_v1";
+function loadUIState(){
+  try { return JSON.parse(localStorage.getItem(UI_STORAGE_KEY) || "{}"); }
+  catch(e) { return {}; }
+}
+function saveUIState(patch){
+  try {
+    const current = loadUIState();
+    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify({...current, ...patch}));
+  } catch(e) {}
+}
+function isValidDateIn(list, value){
+  return !!value && Array.isArray(list) && list.includes(value);
+}
+const savedUIAtLoad = loadUIState();
+if(isValidDateIn(state.dates, savedUIAtLoad.selectedDate)){
+  state.selectedIndex = state.dates.indexOf(savedUIAtLoad.selectedDate);
+}
+
 const MONTHS = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
 const DOW = ["DOM","LUN","MAR","MIÉ","JUE","VIE","SÁB"];
 
@@ -806,6 +827,7 @@ function selectIndex(idx){
   if(idx<0 || idx>=state.dates.length) return;
   state.selectedIndex = idx;
   const s = state.dates[idx];
+  saveUIState({selectedDate:s});
   const p = dateParts(s);
   state.monthCursor = new Date(p.y,p.m-1,1);
   document.getElementById("dateSlider").value = idx;
@@ -820,6 +842,7 @@ function moveMonth(delta){
     const p=dateParts(d); return p.y===y && p.m===m;
   });
   if(candidate) state.selectedIndex = state.dates.indexOf(candidate);
+  saveUIState({selectedDate:state.dates[state.selectedIndex] || ""});
   document.getElementById("dateSlider").value = state.selectedIndex;
   renderAll();
 }
@@ -1061,6 +1084,7 @@ document.querySelectorAll(".tab-button").forEach(btn=>{
     document.querySelectorAll(".tab-button").forEach(b=>b.classList.remove("active"));
     document.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("active"));
     btn.classList.add("active");
+    saveUIState({activeTab:btn.dataset.tab});
     const panel=document.getElementById("tab-"+btn.dataset.tab);
     if(panel) panel.classList.add("active");
     if(btn.dataset.tab==="curva-s"){
@@ -1074,6 +1098,13 @@ document.querySelectorAll(".tab-button").forEach(btn=>{
     }
   });
 });
+
+(function restoreActiveTab(){
+  const saved=loadUIState().activeTab;
+  if(!saved) return;
+  const btn=document.querySelector(`.tab-button[data-tab="${saved}"]`);
+  if(btn) btn.click();
+})();
 
 document.getElementById("dateSlider").max=Math.max(0,state.dates.length-1);
 document.getElementById("dateSlider").value=state.selectedIndex;
@@ -1304,6 +1335,7 @@ function applySRange(){
   const cutoff=document.getElementById("sCutoff").value;
   if(!startDate||!endDate||!cutoff)return;
   if(startDate>endDate){document.getElementById("sEnd").value=startDate;return applySRange();}
+  saveUIState({sStart:startDate,sEnd:endDate,sCutoff:cutoff});
   renderSChart(startDate,endDate,cutoff);
   renderCurveDataTable(startDate,endDate,cutoff);
   updateCurveKpis(startDate,endDate);
@@ -1319,6 +1351,7 @@ function applyPRange(){
   if(s>e){document.getElementById("pEnd").value=s;}
   const ss=document.getElementById("pStart").value;
   const ee=document.getElementById("pEnd").value;
+  saveUIState({pStart:ss,pEnd:ee});
 
   const series=cumulativeSeries(ss,ee);
   if(!series.length) return;
@@ -1387,6 +1420,7 @@ function renderWeeklyAnalysis(){
 
   const s=document.getElementById("weeklyStart").value;
   const e=document.getElementById("weeklyEnd").value;
+  saveUIState({weeklyStart:s,weeklyEnd:e});
   const dates=(PAYLOAD.dates||[]).filter(d=>d>=s && d<=e);
 
   const production=dates.reduce((a,d)=>a+(Number(PAYLOAD.production[d])||0),0);
@@ -1756,9 +1790,15 @@ function initWeekly(){
   const end=dates[dates.length-1];
   const endIndex=dates.length-1;
   const start=dates[Math.max(0,endIndex-6)];
+  const saved=loadUIState();
+  const savedStart=isValidDateIn(dates,saved.weeklyStart) ? saved.weeklyStart : start;
+  const savedEnd=isValidDateIn(dates,saved.weeklyEnd) ? saved.weeklyEnd : end;
 
-  fillWeeklyDateSelect("weeklyStart",start);
-  fillWeeklyDateSelect("weeklyEnd",end);
+  fillWeeklyDateSelect("weeklyStart",savedStart);
+  fillWeeklyDateSelect("weeklyEnd",savedEnd);
+  if(document.getElementById("weeklyStart").value>document.getElementById("weeklyEnd").value){
+    document.getElementById("weeklyEnd").value=document.getElementById("weeklyStart").value;
+  }
 
   document.getElementById("weeklyStart").addEventListener("change",()=>{
     const s=document.getElementById("weeklyStart").value;
@@ -1798,19 +1838,27 @@ function initWeeklyCollapsible(){
 
 
 function initCurvaS(){
-  fillDateSelect("sStart",CURVA_DATA.defaultStart);
-  fillDateSelect("sEnd",CURVA_DATA.defaultEnd);
-  fillDateSelect("sCutoff",CURVA_DATA.defaultEnd);
-  fillDateSelect("pStart",CURVA_DATA.defaultStart);
-  fillDateSelect("pEnd",CURVA_DATA.defaultEnd);
+  const saved=loadUIState();
+  const valid=d=>isValidDateIn(CURVA_DATA.dates,d);
+  const sStart=valid(saved.sStart)?saved.sStart:CURVA_DATA.defaultStart;
+  const sEnd=valid(saved.sEnd)?saved.sEnd:CURVA_DATA.defaultEnd;
+  const sCutoff=valid(saved.sCutoff)?saved.sCutoff:CURVA_DATA.defaultEnd;
+  const pStart=valid(saved.pStart)?saved.pStart:CURVA_DATA.defaultStart;
+  const pEnd=valid(saved.pEnd)?saved.pEnd:CURVA_DATA.defaultEnd;
+
+  fillDateSelect("sStart",sStart);
+  fillDateSelect("sEnd",sEnd);
+  fillDateSelect("sCutoff",sCutoff);
+  fillDateSelect("pStart",pStart);
+  fillDateSelect("pEnd",pEnd);
 
   document.getElementById("applyS").addEventListener("click",applySRange);
   document.getElementById("sStart").addEventListener("change",applySRange);
   document.getElementById("sEnd").addEventListener("change",applySRange);
   document.getElementById("sCutoff").addEventListener("change",applySRange);
   document.getElementById("applyP").addEventListener("click",applyPRange);
-  document.getElementById("pStart").addEventListener("change",()=>ensureRangeOrder("pStart","pEnd"));
-  document.getElementById("pEnd").addEventListener("change",()=>ensureRangeOrder("pStart","pEnd"));
+  document.getElementById("pStart").addEventListener("change",()=>{ensureRangeOrder("pStart","pEnd"); applyPRange();});
+  document.getElementById("pEnd").addEventListener("change",()=>{ensureRangeOrder("pStart","pEnd"); applyPRange();});
 
   applySRange();
   applyPRange();
