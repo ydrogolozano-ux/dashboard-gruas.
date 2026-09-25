@@ -1,0 +1,6 @@
+# Datos locales: no subir el Excel al repositorio público
+DATA GRUAS.xlsx
+*.xlsx
+*.xlsm
+__pycache__/
+*.pyc
