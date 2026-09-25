@@ -135,10 +135,10 @@ usage = {}
 
 def normalize_equipment(name):
     s = clean(name)
-    # El dashboard actual usa 36 TN para CG-1048 aunque algunas hojas
-    # históricas del Excel todavía dicen 23 TN.
+    # El dashboard usa 23 TN como denominación ejecutiva, aunque la hoja DATA
+    # pueda contener la denominación 36 TN.
     if s.upper() == "CAMIÓN GRÚA 23 TN":
-        return "CAMIÓN GRÚA 36 TN"
+        return "CAMIÓN GRÚA 23 TN"
     return s
 
 for row in dm_rows[1:]:
@@ -146,7 +146,7 @@ for row in dm_rows[1:]:
     if not d:
         continue
     eq = normalize_equipment(row[di.get("GRUA", -1)]) if "GRUA" in di else ""
-    if eq not in ("Camión Grúa Semitrailer 20 TN", "CAMIÓN GRÚA 36 TN", "GRÚA TADANO 60 TN"):
+    if eq not in ("Camión Grúa Semitrailer 20 TN", "CAMIÓN GRÚA 23 TN", "GRÚA TADANO 60 TN"):
         continue
 
     dm = num(row[di.get("DM", -1)]) if "DM" in di else None
