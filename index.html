@@ -1,4 +1,4 @@
-<!-- DASHBOARD_BUILD: 2026-09-28 08:00:15 -->
+<!-- DASHBOARD_BUILD: 2026-09-28 08:42:08 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -173,6 +173,27 @@ h1{margin:3px 0 3px;font-size:26px;line-height:1.1;color:var(--navy)}
 }
 
 .l-projected{background:repeating-linear-gradient(to right,#64748b 0 7px,transparent 7px 12px)}
+
+
+/* ---------- Horas efectivas diarias · respecto a Target ---------- */
+.daily-target-card{margin-top:12px}
+.daily-target-sub{font-size:9px;color:#98a2b3;margin-top:3px}
+.daily-target-wrap{width:100%;overflow-x:auto;border:1px solid #e6eaf0;border-radius:6px;background:#fff}
+#dailyTargetChart{width:100%;height:auto;min-width:900px;display:block}
+.daily-target-table-wrap{margin-top:8px;overflow-x:auto;border:1px solid #d7dde5;background:#fff}
+.daily-target-table{border-collapse:collapse;width:max-content;min-width:100%;font-size:9px;color:#344054}
+.daily-target-table th,.daily-target-table td{border-right:1px solid #e1e5ea;border-bottom:1px solid #dfe4ea;padding:4px 7px;text-align:right;white-space:nowrap;min-width:62px}
+.daily-target-table th:first-child,.daily-target-table td:first-child{position:sticky;left:0;z-index:2;min-width:245px;text-align:left;background:#fff}
+.daily-target-table thead th{background:#f2f5f8;color:#475467;font-weight:800}
+.daily-target-table .date-row th{background:#eef2f6;color:#344054}
+.daily-target-table .weekday-row th{background:#fafbfc;color:#667085;font-weight:600}
+.daily-target-table .label-target{color:#159957;font-weight:800}
+.daily-target-table .label-camion{color:#003f9e;font-weight:800}
+.daily-target-table .label-semi{color:#f47b2a;font-weight:800}
+.daily-target-table .label-tadano{color:#12a9df;font-weight:800}
+.daily-target-table .projected-cell{color:#667085;font-style:italic}
+.daily-target-table .cutoff{background:#fff3a6!important;box-shadow:inset 2px 0 0 #f3c623,inset -2px 0 0 #f3c623;font-weight:800}
+.daily-target-table .cutoff-top{border-top:2px solid #f3c623}.daily-target-table .cutoff-bottom{border-bottom:2px solid #f3c623}
 
 .productivity-control-card{
   background:#fff;
@@ -738,6 +759,29 @@ h1{margin:3px 0 3px;font-size:26px;line-height:1.1;color:var(--navy)}
     </div>
   </section>
 
+  <section class="curve-card daily-target-card">
+    <div class="curve-card-head">
+      <div>
+        <div class="card-kicker">HORAS EFECTIVAS · CONTROL DIARIO</div>
+        <h2>HORAS EFECTIVAS POR GRÚA – RESPECTO A TARGET</h2>
+        <div class="daily-target-sub">Horas efectivas diarias tomadas directamente de la pestaña <b>Curva "S"</b> del Excel · el gráfico termina en la Fecha de Corte seleccionada</div>
+      </div>
+      <div class="legend-line">
+        <span><i class="l-production"></i>Real Camión Grúa 23 TN</span>
+        <span><i class="l-semi"></i>Real Grua Semitrailer 20 TN</span>
+        <span><i class="l-tadano"></i>Real Tadano 60 TN</span>
+        <span><i class="l-target"></i>Target Diario</span>
+      </div>
+    </div>
+    <div class="daily-target-wrap">
+      <svg id="dailyTargetChart" viewBox="0 0 1200 560" role="img" aria-label="Horas efectivas por grúa respecto al target diario"></svg>
+    </div>
+    <div class="daily-target-table-wrap">
+      <table class="daily-target-table" id="dailyTargetTable"></table>
+    </div>
+  </section>
+
+
   <div class="curve-note">
     <b>Criterio:</b> la Curva "S" utiliza directamente los acumulados de la pestaña <b>Curva "S"</b> del Excel; se muestran únicamente días laborables y
     los valores proyectados posteriores al último dato real se mantienen hasta el <b>día 12</b>, que corresponde al cierre de la curva. El Target se presenta como línea verde discontinua, siguiendo la referencia de
@@ -1146,7 +1190,8 @@ if(state.dates.length){
   renderAll();
 }
 
-const CURVA_DATA = {"dates":["2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12"],"series":[{"date":"2026-09-14","target":8.118811881188119,"projected":false,"Camión Grúa 23 TN":8.083333333333334,"Grua Semitrailer 20 TN":8.083333333333334,"Tadano 60 TN":8.25},{"date":"2026-09-15","target":16.237623762376238,"projected":false,"Camión Grúa 23 TN":16.083333333333336,"Grua Semitrailer 20 TN":16.166666666666664,"Tadano 60 TN":16.5},{"date":"2026-09-16","target":24.356435643564357,"projected":false,"Camión Grúa 23 TN":24.333333333333336,"Grua Semitrailer 20 TN":24.249999999999996,"Tadano 60 TN":24.75},{"date":"2026-09-17","target":32.475247524752476,"projected":false,"Camión Grúa 23 TN":32.333333333333336,"Grua Semitrailer 20 TN":32.33333333333333,"Tadano 60 TN":33.0},{"date":"2026-09-18","target":38.97029702970297,"projected":false,"Camión Grúa 23 TN":33.9166666666667,"Grua Semitrailer 20 TN":38.5833333333333,"Tadano 60 TN":33.0},{"date":"2026-09-21","target":47.089108910891085,"projected":false,"Camión Grúa 23 TN":38.6666666666667,"Grua Semitrailer 20 TN":44.08333333333333,"Tadano 60 TN":40.0},{"date":"2026-09-22","target":55.20792079207921,"projected":false,"Camión Grúa 23 TN":46.66666666666667,"Grua Semitrailer 20 TN":51.916666666666664,"Tadano 60 TN":47.833333333333336},{"date":"2026-09-23","target":63.32673267326733,"projected":false,"Camión Grúa 23 TN":53.333333333333336,"Grua Semitrailer 20 TN":59.33333333333333,"Tadano 60 TN":55.80555555555556},{"date":"2026-09-24","target":71.44554455445545,"projected":false,"Camión Grúa 23 TN":60.0,"Grua Semitrailer 20 TN":66.75,"Tadano 60 TN":63.77777777777778},{"date":"2026-09-25","target":77.94059405940595,"projected":false,"Camión Grúa 23 TN":66.66666666666667,"Grua Semitrailer 20 TN":74.16666666666667,"Tadano 60 TN":71.75},{"date":"2026-09-28","target":86.05940594059408,"projected":true,"Camión Grúa 23 TN":73.33333333333334,"Grua Semitrailer 20 TN":81.58333333333334,"Tadano 60 TN":79.72222222222223},{"date":"2026-09-29","target":94.1782178217822,"projected":true,"Camión Grúa 23 TN":80.00000000000001,"Grua Semitrailer 20 TN":89.00000000000001,"Tadano 60 TN":87.69444444444446},{"date":"2026-09-30","target":102.29702970297032,"projected":true,"Camión Grúa 23 TN":86.66666666666669,"Grua Semitrailer 20 TN":96.41666666666669,"Tadano 60 TN":95.66666666666669},{"date":"2026-10-01","target":110.41584158415844,"projected":true,"Camión Grúa 23 TN":93.33333333333336,"Grua Semitrailer 20 TN":103.83333333333336,"Tadano 60 TN":103.63888888888891},{"date":"2026-10-02","target":116.91089108910894,"projected":true,"Camión Grúa 23 TN":100.00000000000003,"Grua Semitrailer 20 TN":111.25000000000003,"Tadano 60 TN":111.61111111111114},{"date":"2026-10-05","target":125.02970297029707,"projected":true,"Camión Grúa 23 TN":106.6666666666667,"Grua Semitrailer 20 TN":118.6666666666667,"Tadano 60 TN":119.58333333333337},{"date":"2026-10-06","target":133.14851485148517,"projected":true,"Camión Grúa 23 TN":113.33333333333337,"Grua Semitrailer 20 TN":126.08333333333337,"Tadano 60 TN":127.5555555555556},{"date":"2026-10-07","target":141.2673267326733,"projected":true,"Camión Grúa 23 TN":120.00000000000004,"Grua Semitrailer 20 TN":133.50000000000003,"Tadano 60 TN":135.52777777777783},{"date":"2026-10-08","target":149.38613861386142,"projected":true,"Camión Grúa 23 TN":126.66666666666671,"Grua Semitrailer 20 TN":140.91666666666669,"Tadano 60 TN":143.50000000000006},{"date":"2026-10-09","target":155.8811881188119,"projected":true,"Camión Grúa 23 TN":133.33333333333337,"Grua Semitrailer 20 TN":148.33333333333334,"Tadano 60 TN":151.47222222222229},{"date":"2026-10-12","target":164.00000000000003,"projected":true,"Camión Grúa 23 TN":140.00000000000003,"Grua Semitrailer 20 TN":155.75,"Tadano 60 TN":159.4444444444445}],"equipment":["Camión Grúa 23 TN","Grua Semitrailer 20 TN","Tadano 60 TN"],"defaultStart":"2026-09-25","defaultEnd":"2026-10-12","lastActual":"2026-09-25","source":"Curva \"S\"","projectionEndpointDay":12};
+const CURVA_DATA = {"dates":["2026-09-14","2026-09-15","2026-09-16","2026-09-17","2026-09-18","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-28","2026-09-29","2026-09-30","2026-10-01","2026-10-02","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-12"],"series":[{"date":"2026-09-14","target":8.118811881188119,"projected":false,"Camión Grúa 23 TN":8.083333333333334,"Grua Semitrailer 20 TN":8.083333333333334,"Tadano 60 TN":8.25},{"date":"2026-09-15","target":16.237623762376238,"projected":false,"Camión Grúa 23 TN":16.083333333333336,"Grua Semitrailer 20 TN":16.166666666666664,"Tadano 60 TN":16.5},{"date":"2026-09-16","target":24.356435643564357,"projected":false,"Camión Grúa 23 TN":24.333333333333336,"Grua Semitrailer 20 TN":24.249999999999996,"Tadano 60 TN":24.75},{"date":"2026-09-17","target":32.475247524752476,"projected":false,"Camión Grúa 23 TN":32.333333333333336,"Grua Semitrailer 20 TN":32.33333333333333,"Tadano 60 TN":33.0},{"date":"2026-09-18","target":38.97029702970297,"projected":false,"Camión Grúa 23 TN":33.9166666666667,"Grua Semitrailer 20 TN":38.5833333333333,"Tadano 60 TN":33.0},{"date":"2026-09-21","target":47.089108910891085,"projected":false,"Camión Grúa 23 TN":38.6666666666667,"Grua Semitrailer 20 TN":44.08333333333333,"Tadano 60 TN":40.0},{"date":"2026-09-22","target":55.20792079207921,"projected":false,"Camión Grúa 23 TN":46.66666666666667,"Grua Semitrailer 20 TN":51.916666666666664,"Tadano 60 TN":47.833333333333336},{"date":"2026-09-23","target":63.32673267326733,"projected":false,"Camión Grúa 23 TN":54.75000000000001,"Grua Semitrailer 20 TN":60.0,"Tadano 60 TN":56.083333333333336},{"date":"2026-09-24","target":71.44554455445545,"projected":false,"Camión Grúa 23 TN":59.41666666666667,"Grua Semitrailer 20 TN":66.38333333333333,"Tadano 60 TN":62.833333333333336},{"date":"2026-09-25","target":77.94059405940595,"projected":false,"Camión Grúa 23 TN":65.5,"Grua Semitrailer 20 TN":72.63333333333333,"Tadano 60 TN":69.08333333333334},{"date":"2026-09-28","target":86.05940594059408,"projected":true,"Camión Grúa 23 TN":72.05,"Grua Semitrailer 20 TN":79.89666666666666,"Tadano 60 TN":76.75925925925927},{"date":"2026-09-29","target":94.1782178217822,"projected":true,"Camión Grúa 23 TN":78.6,"Grua Semitrailer 20 TN":87.16,"Tadano 60 TN":84.43518518518519},{"date":"2026-09-30","target":102.29702970297032,"projected":true,"Camión Grúa 23 TN":85.14999999999999,"Grua Semitrailer 20 TN":94.42333333333333,"Tadano 60 TN":92.11111111111111},{"date":"2026-10-01","target":110.41584158415844,"projected":true,"Camión Grúa 23 TN":91.69999999999999,"Grua Semitrailer 20 TN":101.68666666666667,"Tadano 60 TN":99.78703703703704},{"date":"2026-10-02","target":116.91089108910894,"projected":true,"Camión Grúa 23 TN":98.24999999999999,"Grua Semitrailer 20 TN":108.95,"Tadano 60 TN":107.46296296296296},{"date":"2026-10-05","target":125.02970297029707,"projected":true,"Camión Grúa 23 TN":104.79999999999998,"Grua Semitrailer 20 TN":116.21333333333334,"Tadano 60 TN":115.13888888888889},{"date":"2026-10-06","target":133.14851485148517,"projected":true,"Camión Grúa 23 TN":111.34999999999998,"Grua Semitrailer 20 TN":123.47666666666667,"Tadano 60 TN":122.81481481481481},{"date":"2026-10-07","target":141.2673267326733,"projected":true,"Camión Grúa 23 TN":117.89999999999998,"Grua Semitrailer 20 TN":130.74,"Tadano 60 TN":130.49074074074073},{"date":"2026-10-08","target":149.38613861386142,"projected":true,"Camión Grúa 23 TN":124.44999999999997,"Grua Semitrailer 20 TN":138.00333333333333,"Tadano 60 TN":138.16666666666666},{"date":"2026-10-09","target":155.8811881188119,"projected":true,"Camión Grúa 23 TN":130.99999999999997,"Grua Semitrailer 20 TN":145.26666666666665,"Tadano 60 TN":145.84259259259258},{"date":"2026-10-12","target":164.00000000000003,"projected":true,"Camión Grúa 23 TN":137.54999999999998,"Grua Semitrailer 20 TN":152.52999999999997,"Tadano 60 TN":153.5185185185185}],"equipment":["Camión Grúa 23 TN","Grua Semitrailer 20 TN","Tadano 60 TN"],"defaultStart":"2026-09-25","defaultEnd":"2026-10-12","lastActual":"2026-09-25","source":"Curva \"S\"","projectionEndpointDay":12};
+const CURVA_EXCEL_DAILY = [{"date":"2026-09-14","target":8.118811881188119,"Camión Grúa 23 TN":8.083333333333334,"Grua Semitrailer 20 TN":8.083333333333334,"Tadano 60 TN":8.25,"projected":false},{"date":"2026-09-15","target":8.118811881188119,"Camión Grúa 23 TN":8.000000000000002,"Grua Semitrailer 20 TN":8.08333333333333,"Tadano 60 TN":8.25,"projected":false},{"date":"2026-09-16","target":8.118811881188119,"Camión Grúa 23 TN":8.25,"Grua Semitrailer 20 TN":8.083333333333332,"Tadano 60 TN":8.25,"projected":false},{"date":"2026-09-17","target":8.118811881188119,"Camión Grúa 23 TN":8.0,"Grua Semitrailer 20 TN":8.083333333333332,"Tadano 60 TN":8.25,"projected":false},{"date":"2026-09-18","target":6.495049504950496,"Camión Grúa 23 TN":1.5833333333333641,"Grua Semitrailer 20 TN":6.249999999999972,"Tadano 60 TN":0.0,"projected":false},{"date":"2026-09-21","target":8.118811881188119,"Camión Grúa 23 TN":4.75,"Grua Semitrailer 20 TN":5.500000000000028,"Tadano 60 TN":7.0,"projected":false},{"date":"2026-09-22","target":8.118811881188119,"Camión Grúa 23 TN":7.999999999999972,"Grua Semitrailer 20 TN":7.833333333333336,"Tadano 60 TN":7.833333333333336,"projected":false},{"date":"2026-09-23","target":8.118811881188119,"Camión Grúa 23 TN":8.083333333333336,"Grua Semitrailer 20 TN":8.083333333333336,"Tadano 60 TN":8.25,"projected":false},{"date":"2026-09-24","target":8.118811881188119,"Camión Grúa 23 TN":4.666666666666664,"Grua Semitrailer 20 TN":6.383333333333326,"Tadano 60 TN":6.75,"projected":false},{"date":"2026-09-25","target":6.495049504950496,"Camión Grúa 23 TN":6.083333333333329,"Grua Semitrailer 20 TN":6.25,"Tadano 60 TN":6.250000000000007,"projected":false},{"date":"2026-09-28","target":8.118811881188119,"Camión Grúa 23 TN":6.55,"Grua Semitrailer 20 TN":7.263333333333335,"Tadano 60 TN":7.675925925925924,"projected":true},{"date":"2026-09-29","target":8.118811881188119,"Camión Grúa 23 TN":6.55,"Grua Semitrailer 20 TN":7.263333333333335,"Tadano 60 TN":7.675925925925924,"projected":true},{"date":"2026-09-30","target":8.118811881188119,"Camión Grúa 23 TN":6.55,"Grua Semitrailer 20 TN":7.263333333333335,"Tadano 60 TN":7.675925925925924,"projected":true},{"date":"2026-10-01","target":8.118811881188119,"Camión Grúa 23 TN":6.55,"Grua Semitrailer 20 TN":7.263333333333335,"Tadano 60 TN":7.675925925925924,"projected":true},{"date":"2026-10-02","target":6.495049504950496,"Camión Grúa 23 TN":6.55,"Grua Semitrailer 20 TN":7.263333333333335,"Tadano 60 TN":7.675925925925924,"projected":true},{"date":"2026-10-05","target":8.118811881188119,"Camión Grúa 23 TN":6.55,"Grua Semitrailer 20 TN":7.263333333333335,"Tadano 60 TN":7.675925925925924,"projected":true},{"date":"2026-10-06","target":8.118811881188119,"Camión Grúa 23 TN":6.55,"Grua Semitrailer 20 TN":7.263333333333335,"Tadano 60 TN":7.675925925925924,"projected":true},{"date":"2026-10-07","target":8.118811881188119,"Camión Grúa 23 TN":6.55,"Grua Semitrailer 20 TN":7.263333333333335,"Tadano 60 TN":7.675925925925924,"projected":true},{"date":"2026-10-08","target":8.118811881188119,"Camión Grúa 23 TN":6.55,"Grua Semitrailer 20 TN":7.263333333333335,"Tadano 60 TN":7.675925925925924,"projected":true},{"date":"2026-10-09","target":6.495049504950496,"Camión Grúa 23 TN":6.55,"Grua Semitrailer 20 TN":7.263333333333335,"Tadano 60 TN":7.675925925925924,"projected":true},{"date":"2026-10-12","target":8.118811881188119,"Camión Grúa 23 TN":6.55,"Grua Semitrailer 20 TN":7.263333333333335,"Tadano 60 TN":7.675925925925924,"projected":true},{"date":"2026-10-13","target":6.31285831285831,"Camión Grúa 23 TN":6.55,"Grua Semitrailer 20 TN":7.263333333333335,"Tadano 60 TN":7.675925925925924,"projected":true},{"date":"2026-10-14","target":7.454545454545453,"Camión Grúa 23 TN":6.55,"Grua Semitrailer 20 TN":7.263333333333335,"Tadano 60 TN":7.675925925925924,"projected":true}];
 const CURVA_COLORS = {
   camion:"#003f9e",
   semitrailer:"#f47b2a",
@@ -1293,6 +1338,142 @@ function renderSChart(start,end,cutoff){
   });
 }
 
+
+function dailySeries(start,end){
+  // Fuente directa de la pestaña Curva "S" del Excel: filas 30-34 (Target Diario + horas efectivas).
+  // El gráfico diario NO se calcula por diferencia del acumulado; usa los valores diarios originales.
+  return CURVA_EXCEL_DAILY.filter(p=>p.date>=start && p.date<=end).map(p=>({
+    date:p.date,
+    projected:!!p.projected,
+    target:Number(p.target||0),
+    "Camión Grúa 23 TN":Number(p["Camión Grúa 23 TN"]||0),
+    "Grua Semitrailer 20 TN":Number(p["Grua Semitrailer 20 TN"]||0),
+    "Tadano 60 TN":Number(p["Tadano 60 TN"]||0)
+  }));
+}
+
+function renderDailyTargetChart(start,end,cutoff){
+  const svg=document.getElementById("dailyTargetChart");
+  while(svg.firstChild) svg.removeChild(svg.firstChild);
+  const table=document.getElementById("dailyTargetTable");
+  const series=dailySeries(start,end);
+  if(!series.length){ if(table)table.innerHTML=""; return; }
+
+  const W=1200,H=560,L=72,R=25,T=45,B=85,PW=W-L-R,PH=H-T-B;
+  const yMax=10;
+  const x=i=>L+(series.length===1?PW/2:i/(series.length-1)*PW);
+  const y=v=>T+PH-(Math.max(0,Math.min(yMax,v))/yMax)*PH;
+
+  svg.appendChild(svgEl("rect",{x:0,y:0,width:W,height:H,fill:"#fff"}));
+
+  for(let t=0;t<=10;t++){
+    const yy=y(t);
+    svg.appendChild(svgEl("line",{x1:L,y1:yy,x2:W-R,y2:yy,stroke:"#dfe4ea","stroke-width":1}));
+    svg.appendChild(svgEl("text",{x:L-10,y:yy+4,"text-anchor":"end",fill:"#667085","font-size":11},t.toFixed(2)));
+  }
+
+  const step=Math.max(1,Math.ceil(series.length/16));
+  series.forEach((p,i)=>{
+    if(i%step===0 || i===series.length-1){
+      const xx=x(i);
+      svg.appendChild(svgEl("line",{x1:xx,y1:T,x2:xx,y2:T+PH,stroke:"#eef1f4","stroke-width":1}));
+      svg.appendChild(svgEl("text",{x:xx,y:H-B+24,"text-anchor":"middle",fill:"#667085","font-size":10},shortDateLabel(p.date)));
+    }
+  });
+
+  // Resaltar la fecha de corte de la Curva "S" con amarillo.
+  const cutoffIndex=series.findIndex(p=>p.date===cutoff);
+  if(cutoffIndex>=0){
+    const cx=x(cutoffIndex);
+    const bandW=series.length===1?Math.max(28,PW/Math.max(series.length,1)):Math.max(24,PW/Math.max(series.length-1,1));
+    const x0=Math.max(L,cx-bandW/2), x1=Math.min(W-R,cx+bandW/2);
+    svg.appendChild(svgEl("rect",{x:x0,y:T,width:Math.max(1,x1-x0),height:PH,fill:"#fff3a6",opacity:"0.72"}));
+    svg.appendChild(svgEl("line",{x1:cx,y1:T,x2:cx,y2:T+PH,stroke:"#f3c623","stroke-width":2,"stroke-dasharray":"5 4"}));
+    svg.appendChild(svgEl("text",{x:cx,y:T-12,"text-anchor":"middle",fill:"#7a5a00","font-size":10,"font-weight":"800"},"CORTE "+shortDateLabel(cutoff)));
+  }
+
+  svg.appendChild(svgEl("text",{x:L,y:25,fill:"#475467","font-size":11,"font-weight":"700"},"Horas efectivas"));
+  svg.appendChild(svgEl("text",{x:W/2,y:H-14,"text-anchor":"middle",fill:"#667085","font-size":10},"Fecha"));
+
+  const specs=[
+    {key:"Camión Grúa 23 TN",color:CURVA_COLORS.camion,width:3,marker:"diamond"},
+    {key:"Grua Semitrailer 20 TN",color:CURVA_COLORS.semitrailer,width:3,marker:"triangle"},
+    {key:"Tadano 60 TN",color:CURVA_COLORS.tadano,width:3,marker:"circle"},
+    {key:"target",color:CURVA_COLORS.target,width:2.5,marker:"none"}
+  ];
+
+  specs.forEach(spec=>{
+    for(let i=1;i<series.length;i++){
+      const a=series[i-1],b=series[i];
+      const va=spec.key==="target"?a.target:a[spec.key];
+      const vb=spec.key==="target"?b.target:b[spec.key];
+      svg.appendChild(svgEl("line",{
+        x1:x(i-1),y1:y(va),x2:x(i),y2:y(vb),
+        stroke:spec.color,"stroke-width":spec.width,"stroke-linecap":"round",
+        "stroke-dasharray":spec.key==="target"?"9 6":((a.projected||b.projected)?"7 5":"none")
+      }));
+    }
+
+    if(spec.marker!=="none"){
+      series.forEach((p,i)=>{
+        const xx=x(i),yy=y(p[spec.key]);
+        if(spec.marker==="diamond"){
+          svg.appendChild(svgEl("rect",{x:xx-3,y:yy-3,width:6,height:6,fill:spec.color,transform:`rotate(45 ${xx} ${yy})`}));
+        }else if(spec.marker==="triangle"){
+          svg.appendChild(svgEl("polygon",{points:`${xx},${yy-4} ${xx-4},${yy+3} ${xx+4},${yy+3}`,fill:spec.color}));
+        }else{
+          svg.appendChild(svgEl("circle",{cx:xx,cy:yy,r:3,fill:spec.color}));
+        }
+      });
+    }
+  });
+
+  specs.filter(s=>s.marker!=="none").forEach(spec=>{
+    series.forEach((p,i)=>{
+      const value=p[spec.key];
+      const xx=x(i),yy=y(value);
+      let dy=-9;
+      if(spec.key==="Grua Semitrailer 20 TN") dy=15;
+      if(spec.key==="Tadano 60 TN") dy=-10;
+      svg.appendChild(svgEl("text",{
+        x:xx,y:yy+dy,"text-anchor":"middle",fill:spec.color,"font-size":9,"font-weight":"800"
+      },fmt2(value)));
+    });
+  });
+
+  // Mostrar también el valor numérico del Target Diario sobre la línea verde,
+  // siguiendo el formato de la lámina de referencia.
+  series.forEach((p,i)=>{
+    const xx=x(i), yy=y(p.target);
+    let dy=-9;
+    // Si coincide con una grúa, desplazamos ligeramente para evitar solapamientos.
+    const craneValues=[p["Camión Grúa 23 TN"],p["Grua Semitrailer 20 TN"],p["Tadano 60 TN"]];
+    if(craneValues.some(v=>Math.abs(Number(v)-Number(p.target))<0.12)) dy=-20;
+    svg.appendChild(svgEl("text",{
+      x:xx,y:yy+dy,"text-anchor":"middle",fill:CURVA_COLORS.target,"font-size":9,"font-weight":"800"
+    },fmt2(p.target)));
+  });
+
+  const rows=[
+    {label:"Real Camión Grúa 23 TN",key:"Camión Grúa 23 TN",cls:"label-camion"},
+    {label:"Real Grua Semitrailer 20 TN",key:"Grua Semitrailer 20 TN",cls:"label-semi"},
+    {label:"Real Tadano 60 TN",key:"Tadano 60 TN",cls:"label-tadano"},
+    {label:"Target Diario",key:"target",cls:"label-target"}
+  ];
+  const days=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+  let out=`<thead><tr class="date-row"><th>Fecha</th>`;
+  series.forEach(p=>out+=`<th class="${p.date===cutoff?"cutoff cutoff-top":""}">${dateLabel(p.date)}</th>`);
+  out+=`</tr><tr class="weekday-row"><th>Día</th>`;
+  series.forEach(p=>out+=`<th class="${p.date===cutoff?"cutoff":""}">${days[dateObj(p.date).getUTCDay()]}</th>`);
+  out+=`</tr></thead><tbody>`;
+  rows.forEach(r=>{
+    out+=`<tr><th class="${r.cls}">${r.label}</th>`;
+    series.forEach(p=>out+=`<td class="${p.date===cutoff?"cutoff cutoff-bottom":""}${p.projected?" projected-cell":""}">${fmt2(p[r.key])}</td>`);
+    out+="</tr>";
+  });
+  table.innerHTML=out+"</tbody>";
+}
+
 function renderCurveDataTable(start,end,cutoff){
   const table=document.getElementById("curveDataTable"),series=cumulativeSeries(start,end);
   if(!series.length){table.innerHTML="";return}
@@ -1366,6 +1547,8 @@ function applySRange(){
   saveUIState({sStart:startDate,sEnd:endDate,sCutoff:cutoff});
   renderSChart(startDate,endDate,cutoff);
   renderCurveDataTable(startDate,endDate,cutoff);
+  const dailyEnd=(cutoff>=startDate && cutoff<=endDate)?cutoff:endDate;
+  renderDailyTargetChart(startDate,dailyEnd,cutoff);
   updateCurveKpis(startDate,endDate);
   const series=cumulativeSeries(startDate,endDate),cut=series.find(p=>p.date===cutoff);
   document.getElementById("cutoffInfo").textContent=cut
