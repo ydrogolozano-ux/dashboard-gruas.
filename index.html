@@ -1,4 +1,4 @@
-<!-- DASHBOARD_BUILD: 2026-09-28 08:42:08 -->
+<!-- DASHBOARD_BUILD: 2026-09-28 10:38:36 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,6 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Ejecutivo de Grúas — Producción</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --navy:#0f2747; --blue:#1f5fbf; --blue2:#2f80ed;
@@ -358,6 +360,149 @@ h1{margin:3px 0 3px;font-size:26px;line-height:1.1;color:var(--navy)}
 .weekly-usage-card{margin-top:12px;min-height:0}
 .weekly-usage-chart-wrap{border:1px solid #e6eaf0;border-radius:6px;background:#fff;overflow:hidden}
 #weeklyUsageChart{width:100%;height:470px;display:block}
+
+/* =====================================================================
+   CAPA DE ESTILO EJECUTIVO — solo presentación (tipografía, jerarquía,
+   espaciado, contraste). No modifica datos, series, escalas ni colores
+   de categorías / series.
+   ===================================================================== */
+:root{
+  --navy:#0f2747; --ink:#1d2939; --muted:#5b6778; --faint:#8a94a6;
+  --line:#e3e8ef; --bg:#f3f5f8;
+  --font:"Inter",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;font-feature-settings:"tnum" 1}
+button,select,input{font-family:inherit}
+
+/* Encabezado */
+.header{border-top:0;border-bottom:1px solid var(--line);padding:14px 30px 0;box-shadow:0 1px 0 rgba(15,39,71,.02)}
+.title{color:var(--navy);font-size:15px;font-weight:800;letter-spacing:2.2px}
+.title:before{content:"";display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--navy);margin-right:10px;vertical-align:2px}
+.nav{margin-top:12px;gap:4px}
+.tab-button{border:0;border-bottom:3px solid transparent;background:transparent;color:var(--muted);border-radius:0;padding:10px 26px 11px;font-size:11.5px;letter-spacing:.8px;min-width:0}
+.tab-button:hover{color:var(--navy);background:#f6f8fb}
+.tab-button.active{background:transparent;color:var(--navy);border-color:var(--navy)}
+
+/* Contenedor y encabezado de sección */
+.container{padding:28px 28px 36px}
+.section-head,.curva-header{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.eyebrow,.card-kicker{font-size:10.5px;letter-spacing:1.4px;color:var(--faint);font-weight:700}
+h1{font-size:28px;font-weight:800;letter-spacing:-.4px;margin:6px 0 6px}
+.subtitle{font-size:13px;color:var(--muted)}
+.date-badge{border-radius:10px;padding:11px 18px;box-shadow:none;border-left:4px solid var(--navy)}
+.date-badge span{font-size:10px;letter-spacing:1.2px;color:var(--faint)}
+.date-badge strong{font-size:18px;color:var(--navy);margin-top:4px}
+
+/* Tarjetas: bordes limpios, sombras mínimas */
+.card,.timeline-card,.kpi-card,.range-section,.curve-kpi,.curve-card,.productivity-control-card,.weekly-timeline-card{border-color:var(--line);border-radius:12px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.card{padding:18px 20px}
+.card-head{margin-bottom:14px}
+.card-head h2,.curve-card-head h2{font-size:16.5px;font-weight:700;color:var(--navy);letter-spacing:-.1px;margin-top:4px}
+.curve-card{padding:18px 20px}
+.curve-card-head{margin-bottom:12px;align-items:flex-end}
+.status-chip,.mini-total{font-size:11.5px;padding:6px 12px;border-radius:999px;background:#eef2f7;color:var(--navy)}
+
+/* Línea de tiempo */
+.timeline-card{padding:14px 18px 12px}
+.timeline-label{font-size:13px}
+.month-controls{font-size:13px}
+.month-controls button{width:28px;height:26px;border-radius:6px}
+.day{height:44px;font-size:12px;font-weight:600;color:var(--ink);background:#f4f6f9}
+.day .dow{font-size:9px;letter-spacing:.4px}
+.slider-row span{font-size:10.5px;color:var(--faint)}
+
+/* KPIs: número principal dominante */
+.kpi-grid,.weekly-kpi-grid,.curve-kpis{gap:14px;margin:18px 0}
+.kpi-card{padding:18px 18px 14px 22px;min-height:118px}
+.kpi-card:before{width:5px;border-radius:12px 0 0 12px}
+.kpi-icon{width:34px;height:34px;border-radius:8px;font-size:15px;background:#f2f4f7}
+.kpi-label{font-size:11.5px;letter-spacing:.9px;color:var(--muted);font-weight:700}
+.kpi-value{font-size:32px;font-weight:800;letter-spacing:-.6px;line-height:1.15;margin-top:3px}
+.kpi-note{font-size:11.5px;color:var(--muted);margin-top:14px}
+.kpi-production .kpi-icon{color:var(--green)} .kpi-standby .kpi-icon{color:var(--orange)}
+.kpi-unavailable .kpi-icon{color:var(--red)} .kpi-unplanned .kpi-icon{color:#7c3aed}
+
+.curve-kpi{padding:14px 18px;min-height:86px}
+.curve-kpi span,.productivity-kpi span{font-size:10.5px;letter-spacing:1px;color:var(--faint);font-weight:700}
+.curve-kpi strong{font-size:24px;font-weight:800;letter-spacing:-.4px;margin-top:8px}
+.productivity-kpi{padding:12px 16px;border-radius:10px}
+.productivity-kpi strong{font-size:24px;font-weight:800;letter-spacing:-.4px;margin-top:6px}
+
+/* Bloque ejecutivo */
+.executive-grid,.detail-grid{gap:16px;margin-bottom:16px}
+.impact-wrap{gap:32px}
+.impact-donut strong{font-size:22px} .impact-donut span{font-size:11px}
+.impact-legend{gap:12px}
+.impact-legend>div{font-size:13px;grid-template-columns:12px 1fr auto;padding-bottom:8px;border-bottom:1px solid #f0f2f5}
+.legend-dot{width:10px;height:10px}
+.impact-legend strong{font-size:14px}
+.executive-message{font-size:12.5px;line-height:1.5;padding:11px 14px;margin-top:14px;border-radius:6px;background:#f6f8fb}
+.focus-list{gap:10px}
+.focus-item{padding:12px 14px;border-color:var(--line);border-radius:10px}
+.focus-item .name{font-size:13px;font-weight:600}
+.focus-item .tag{font-size:10.5px;color:var(--faint);margin-top:3px}
+.focus-item .hours{font-size:17px}
+
+/* Tablas legibles */
+.chart-table,.weekly-pareto-table{font-size:11.5px}
+.chart-table th,.weekly-pareto-table th{background:#f2f5f9;color:var(--navy);font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;padding:8px 8px;border-bottom:1px solid var(--line)}
+.chart-table td,.weekly-pareto-table td{padding:7px 8px;border-bottom:1px solid #eef1f5}
+.chart-table tr:last-child td,.weekly-pareto-table tr.total td{background:#f2f5f9;color:var(--navy);font-weight:800}
+.chart-table tbody tr:hover td{background:#fafbfd}
+
+/* Barras horizontales */
+.bar-area{margin-top:14px;padding:10px 14px;border-color:var(--line);border-radius:8px}
+.bar-row{grid-template-columns:minmax(200px,340px) 1fr 54px;gap:12px;margin:9px 0}
+.bar-label{font-size:11.5px;color:var(--ink)}
+.bar-track{height:18px;border-radius:4px;background:#eef1f5}
+.bar{font-size:10.5px;border-radius:4px}
+.bar-value{font-size:12px;color:var(--navy)}
+.empty{font-size:12px;padding:26px 12px}
+
+/* Controles de período */
+.range-section,.productivity-control-card,.weekly-timeline-card{padding:16px 18px}
+.range-title,.weekly-title{font-size:10.5px;letter-spacing:1.3px;color:var(--faint);margin-bottom:10px}
+.weekly-help{font-size:11.5px;color:var(--muted)}
+.range-controls label,.weekly-range-controls label{font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.3px}
+.range-controls select,.weekly-range-controls select{height:36px;font-size:12.5px;border-color:#d0d7e2;border-radius:8px}
+.apply-btn,.weekly-apply{height:36px;font-size:11.5px;border-radius:8px;padding:0 16px;letter-spacing:.3px}
+.cutoff-info{font-size:11.5px;border-radius:8px}
+.weekly-period-summary{font-size:11.5px;padding:9px 12px;border-radius:8px;color:var(--muted)}
+
+/* Leyendas: más grandes y fáciles de ubicar */
+.legend-line{font-size:11.5px;color:var(--ink);gap:10px 18px;font-weight:600}
+.legend-line i{width:26px;height:4px}
+.weekly-pareto-sub,.daily-target-sub{font-size:11.5px;color:var(--muted);margin-top:5px}
+
+/* Gráficas SVG: tipografía unificada y halo para evitar solapamientos */
+svg text{font-family:var(--font)}
+#sChart text,#dailyTargetChart text,#weeklyUsageChart text,#weeklyParetoChart text{paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+.svg-wrap,.daily-target-wrap,.weekly-pareto-chart-wrap,.weekly-dm-chart-wrap,.weekly-usage-chart-wrap{border:1px solid #eef1f5;border-radius:8px;background:#fff}
+.weekly-pareto-table-wrap{border-color:var(--line);border-radius:8px}
+
+/* Tablas de datos de curvas */
+.curve-data-table,.daily-target-table{font-size:11px}
+.curve-data-table-wrap,.daily-target-table-wrap{margin-top:12px;border-color:var(--line);border-radius:8px}
+.curve-data-table th,.curve-data-table td,.daily-target-table th,.daily-target-table td{padding:6px 9px;border-color:#edf0f4}
+.curve-data-table thead th,.daily-target-table thead th{background:#f2f5f9;color:var(--navy)}
+
+/* Notas y pie */
+.footer-note,.curve-note{font-size:11.5px;line-height:1.55;padding:12px 16px;border-radius:10px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy);color:var(--muted);margin-top:16px}
+.footer{max-width:1520px;margin:0 auto;padding:4px 28px 28px;font-size:11px;color:var(--faint);text-align:center}
+
+@media(max-width:700px){
+  .header{padding:12px 16px 0}
+  .tab-button{padding:9px 12px 10px;font-size:10.5px}
+  .container{padding:18px 16px 24px}
+  h1{font-size:22px}
+  .kpi-value{font-size:24px}
+  .bar-row{grid-template-columns:150px 1fr 46px}
+}
+
+/* Pareto: tabla sin espacio vacío y textos de la gráfica legibles */
+.weekly-pareto-grid{align-items:start}
+.weekly-pareto-table-wrap{align-self:start}
+#weeklyParetoChart text{font-size:11px}
 </style>
 </head>
 <body>
@@ -1255,7 +1400,7 @@ function svgEl(tag, attrs={}, text=""){
 function renderSChart(start,end,cutoff){
   const svg=document.getElementById("sChart"); while(svg.firstChild)svg.removeChild(svg.firstChild);
   const series=cumulativeSeries(start,end); if(!series.length)return;
-  const W=1200,H=510,L=72,R=25,T=35,B=75,PW=W-L-R,PH=H-T-B;
+  const W=1200,H=510,L=72,R=95,T=35,B=75,PW=W-L-R,PH=H-T-B;
   const maxY=Math.max(10,...series.map(x=>Math.max(x.target,x["Camión Grúa 23 TN"],x["Grua Semitrailer 20 TN"],x["Tadano 60 TN"])));
   const yMax=Math.ceil(maxY/10)*10, x=i=>L+(series.length===1?PW/2:i/(series.length-1)*PW), y=v=>T+PH-v/yMax*PH;
   svg.appendChild(svgEl("rect",{x:0,y:0,width:W,height:H,fill:"#fff"}));
@@ -1278,8 +1423,9 @@ function renderSChart(start,end,cutoff){
   const cutIdx=Math.max(0,series.findIndex(p=>p.date===cutoff));
   const cut=series[cutIdx] || series[series.length-1],cx=x(cutIdx);
   svg.appendChild(svgEl("line",{x1:cx,y1:T-3,x2:cx,y2:T+PH+2,stroke:"#ff2b2b","stroke-width":2,"stroke-dasharray":"7 5"}));
-  svg.appendChild(svgEl("rect",{x:Math.max(L,cx-42),y:5,width:84,height:20,rx:3,fill:"#fff3a6",stroke:"#ff2b2b"}));
-  svg.appendChild(svgEl("text",{x:cx,y:19,"text-anchor":"middle",fill:"#7a0000","font-size":9,"font-weight":"800"},"CORTE "+shortDateLabel(cutoff)));
+  const badgeX=Math.min(W-46,Math.max(L+42,cx));
+  svg.appendChild(svgEl("rect",{x:badgeX-42,y:5,width:84,height:20,rx:3,fill:"#fff3a6",stroke:"#ff2b2b"}));
+  svg.appendChild(svgEl("text",{x:badgeX,y:19,"text-anchor":"middle",fill:"#7a0000","font-size":9,"font-weight":"800"},"CORTE "+shortDateLabel(cutoff)));
   // Etiquetas del corte: separadas verticalmente para evitar solapamiento.
   // Se mantienen conectadas al punto mediante una línea corta y una caja blanca.
   const cutoffItems=[
@@ -1303,7 +1449,7 @@ function renderSChart(start,end,cutoff){
   if(overflow>0) cutoffItems.forEach(item=>item.labelY-=overflow);
 
   // Si el corte está cerca del borde derecho, colocar las etiquetas a la izquierda.
-  const placeLeft=cx>W-245;
+  const placeLeft=cx+85>W;
   const labelX=placeLeft?cx-10:cx+10;
   const textAnchor=placeLeft?"end":"start";
   const boxW=placeLeft?175:175;
@@ -1359,7 +1505,7 @@ function renderDailyTargetChart(start,end,cutoff){
   const series=dailySeries(start,end);
   if(!series.length){ if(table)table.innerHTML=""; return; }
 
-  const W=1200,H=560,L=72,R=25,T=45,B=85,PW=W-L-R,PH=H-T-B;
+  const W=1200,H=560,L=72,R=55,T=45,B=85,PW=W-L-R,PH=H-T-B;
   const yMax=10;
   const x=i=>L+(series.length===1?PW/2:i/(series.length-1)*PW);
   const y=v=>T+PH-(Math.max(0,Math.min(yMax,v))/yMax)*PH;
@@ -1433,7 +1579,8 @@ function renderDailyTargetChart(start,end,cutoff){
       const value=p[spec.key];
       const xx=x(i),yy=y(value);
       let dy=-9;
-      if(spec.key==="Grua Semitrailer 20 TN") dy=15;
+      if(spec.key==="Camión Grúa 23 TN") dy=16;
+      if(spec.key==="Grua Semitrailer 20 TN") dy=-8;
       if(spec.key==="Tadano 60 TN") dy=-10;
       svg.appendChild(svgEl("text",{
         x:xx,y:yy+dy,"text-anchor":"middle",fill:spec.color,"font-size":9,"font-weight":"800"
@@ -1777,9 +1924,9 @@ function renderWeeklyPareto(){
   // Legend.
   svg.appendChild(svgEl("rect",{x:L,y:12,width:10,height:8,fill:"#4b78c2"}));
   svg.appendChild(svgEl("text",{x:L+15,y:20,fill:"#667085","font-size":9},"HORAS STAND BY"));
-  svg.appendChild(svgEl("line",{x1:L+105,y1:16,x2:L+123,y2:16,stroke:"#f47b2a","stroke-width":2.5}));
-  svg.appendChild(svgEl("circle",{cx:L+114,cy:16,r:3,fill:"#f47b2a"}));
-  svg.appendChild(svgEl("text",{x:L+128,y:20,fill:"#667085","font-size":9},"PORCENTAJE ACUM."));
+  svg.appendChild(svgEl("line",{x1:L+130,y1:16,x2:L+148,y2:16,stroke:"#f47b2a","stroke-width":2.5}));
+  svg.appendChild(svgEl("circle",{cx:L+139,cy:16,r:3,fill:"#f47b2a"}));
+  svg.appendChild(svgEl("text",{x:L+154,y:20,fill:"#667085","font-size":9},"PORCENTAJE ACUM."));
 }
 
 
