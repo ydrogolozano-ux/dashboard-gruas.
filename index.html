@@ -1,4 +1,4 @@
-<!-- DASHBOARD_BUILD: 2026-09-29 20:17:32 -->
+<!-- DASHBOARD_BUILD: 2026-09-29 21:02:31 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -383,6 +383,24 @@ button,select,input{font-family:inherit}
 .tab-button:hover{color:var(--navy);background:#f6f8fb}
 .tab-button.active{background:transparent;color:var(--navy);border-color:var(--navy)}
 
+.share-view-btn{
+  border:1px solid #d0d7e2;
+  background:#fff;
+  color:var(--navy);
+  border-radius:8px;
+  padding:8px 12px;
+  font-size:10.5px;
+  font-weight:700;
+  cursor:pointer;
+  margin-left:10px;
+  white-space:nowrap;
+}
+.share-view-btn:hover{background:#f6f8fb;border-color:#9fb4d2}
+.share-view-btn.copied{background:#ecfdf3;border-color:#86efac;color:#166534}
+@media(max-width:700px){
+  .share-view-btn{font-size:10px;padding:7px 9px;margin-left:4px}
+}
+
 /* Contenedor y encabezado de sección */
 .container{padding:28px 28px 36px}
 .section-head,.curva-header{margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--line)}
@@ -512,6 +530,7 @@ svg text{font-family:var(--font)}
   <button class="tab-button active" data-tab="produccion">Producción</button>
   <button class="tab-button" data-tab="curva-s">Curva "S"</button>
   <button class="tab-button" data-tab="produccion-semanal">Producción semanal</button>
+  <button type="button" class="share-view-btn" id="shareViewBtn" title="Copiar enlace con la vista y fechas actuales">🔗 Compartir vista</button>
 </div>
 </header>
 
@@ -946,12 +965,41 @@ const state = {
 };
 
 // ---------- Persistencia robusta de filtros / configuración del usuario ----------
-// La configuración se guarda localmente en el navegador. No se publica en GitHub
-// y no modifica el Excel. Se usa localStorage como almacenamiento principal y
-// una cookie como respaldo para navegadores que restrinjan localStorage.
+// La configuración se guarda localmente para conservar la última vista en cada navegador.
+// Además, la misma configuración se escribe en la URL para que una vista compartida
+// sea idéntica al abrirla desde otro celular o computadora.
+// Prioridad: parámetros de URL > configuración local/cookie > valores predeterminados.
 const UI_STORAGE_KEY = "dashboard_gruas_ui_v2";
 const UI_STORAGE_OLD_KEY = "dashboard_gruas_ui_v1";
 const UI_COOKIE_KEY = "dashboard_gruas_ui";
+
+const SHARED_URL_KEYS = [
+  "selectedDate","weeklyStart","weeklyEnd",
+  "sStart","sEnd","sCutoff","pStart","pEnd","activeTab"
+];
+
+function readSharedUrlState(){
+  const out = {};
+  try {
+    const params = new URLSearchParams(window.location.search);
+    SHARED_URL_KEYS.forEach(key=>{
+      const value = params.get(key);
+      if(value) out[key] = value;
+    });
+  } catch(e) {}
+  return out;
+}
+
+function writeSharedUrlState(state){
+  try {
+    const url = new URL(window.location.href);
+    SHARED_URL_KEYS.forEach(key=>url.searchParams.delete(key));
+    SHARED_URL_KEYS.forEach(key=>{
+      if(state[key]) url.searchParams.set(key,state[key]);
+    });
+    window.history.replaceState({}, "", url.toString());
+  } catch(e) {}
+}
 
 function readCookieState(){
   try {
@@ -979,6 +1027,11 @@ function loadUIState(){
   // Cookie fallback: solo completa datos que no existan en localStorage.
   const cookieState = readCookieState();
   if(cookieState && typeof cookieState === "object") state = {...cookieState, ...state};
+
+  // Si la URL contiene una vista compartida, sus parámetros mandan sobre el almacenamiento local.
+  const shared = readSharedUrlState();
+  if(Object.keys(shared).length) state = {...state, ...shared};
+
   return state;
 }
 function saveUIState(patch){
@@ -987,10 +1040,14 @@ function saveUIState(patch){
     const next = {...current, ...patch, _savedAt: Date.now()};
     localStorage.setItem(UI_STORAGE_KEY, JSON.stringify(next));
     writeCookieState(next);
+    writeSharedUrlState(next);
   } catch(e) {
-    try { writeCookieState({...loadUIState(), ...patch, _savedAt: Date.now()}); } catch(_) {}
+    const fallback = {...loadUIState(), ...patch, _savedAt: Date.now()};
+    try { writeCookieState(fallback); } catch(_) {}
+    try { writeSharedUrlState(fallback); } catch(_) {}
   }
 }
+
 function isValidDateIn(list, value){
   return !!value && Array.isArray(list) && list.includes(value);
 }
@@ -1322,6 +1379,50 @@ document.querySelectorAll(".tab-button").forEach(btn=>{
     }
   });
 });
+
+// ---------- Compartir vista ----------
+// El enlace contiene las fechas/filtros actuales. Al abrirlo en otro dispositivo,
+// esos valores tienen prioridad sobre localStorage/cookies del navegador receptor.
+function copySharedViewLink(){
+  const btn=document.getElementById("shareViewBtn");
+  const url=window.location.href;
+  const done=()=>{
+    if(!btn)return;
+    const original=btn.innerHTML;
+    btn.innerHTML="✓ Enlace copiado";
+    btn.classList.add("copied");
+    setTimeout(()=>{
+      btn.innerHTML=original;
+      btn.classList.remove("copied");
+    },1800);
+  };
+
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(url).then(done).catch(()=>{
+      fallbackCopySharedLink(url,done);
+    });
+  }else{
+    fallbackCopySharedLink(url,done);
+  }
+}
+function fallbackCopySharedLink(url,done){
+  try{
+    const ta=document.createElement("textarea");
+    ta.value=url;
+    ta.style.position="fixed";
+    ta.style.opacity="0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+    done();
+  }catch(e){
+    window.prompt("Copia este enlace para compartir la vista:",url);
+  }
+}
+document.getElementById("shareViewBtn")?.addEventListener("click",copySharedViewLink);
+
 
 document.getElementById("dateSlider").max=Math.max(0,state.dates.length-1);
 document.getElementById("dateSlider").value=state.selectedIndex;
