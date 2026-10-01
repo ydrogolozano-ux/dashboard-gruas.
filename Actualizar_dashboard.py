@@ -159,16 +159,30 @@ wsc = wb['Curva "S"']
 curve_dates = []
 target_row = {}
 s35, s36, s37 = {}, {}, {}
+daily_target = {}
+daily35, daily36, daily37 = {}, {}, {}
 
 for c in range(1, wsc.max_column + 1):
     dk = date_key(wsc.cell(29, c).value)
     if not dk:
         continue
     curve_dates.append(dk)
+
+    # Curva acumulada
     target_row[dk] = num(wsc.cell(31, c).value) or 0.0
     s35[dk] = num(wsc.cell(35, c).value)
     s36[dk] = num(wsc.cell(36, c).value)
     s37[dk] = num(wsc.cell(37, c).value)
+
+    # Control diario: tomar DIRECTAMENTE las filas diarias de Excel.
+    # 30 = Target Diario
+    # 32 = Real Camión Grúa 23 TN
+    # 33 = Real Grua Semitrailer 20 TN
+    # 34 = Real Tadano 60 TN
+    daily_target[dk] = num(wsc.cell(30, c).value) or 0.0
+    daily35[dk] = num(wsc.cell(32, c).value)
+    daily36[dk] = num(wsc.cell(33, c).value)
+    daily37[dk] = num(wsc.cell(34, c).value)
 
 curve_dates = sorted(set(curve_dates))
 if last_data and curve_dates:
@@ -193,9 +207,23 @@ for d in curve_dates:
         "Tadano 60 TN": s37.get(d),
     })
 
+# Datos diarios para "HORAS EFECTIVAS POR GRÚA – RESPECTO A TARGET".
+# Se actualizan automáticamente desde la hoja Curva "S".
+curve_daily = []
+for d in curve_dates:
+    curve_daily.append({
+        "date": d,
+        "target": daily_target.get(d, 0.0),
+        "Camión Grúa 23 TN": daily35.get(d),
+        "Grua Semitrailer 20 TN": daily36.get(d),
+        "Tadano 60 TN": daily37.get(d),
+        "projected": bool(last_data and d > last_data)
+    })
+
 curva = {
     "dates": curve_dates,
     "series": series,
+    "daily": curve_daily,
     "equipment": ["Camión Grúa 23 TN", "Grua Semitrailer 20 TN", "Tadano 60 TN"],
     "defaultStart": next((d for d in curve_dates if d >= last_data), curve_dates[0] if curve_dates else ""),
     "defaultEnd": next((d for d in curve_dates if d.endswith("-12")), curve_dates[-1] if curve_dates else ""),
@@ -218,6 +246,10 @@ payload = {
 text = HTML.read_text(encoding="utf-8")
 text = replace_const(text, "PAYLOAD", payload)
 text = replace_const(text, "CURVA_DATA", curva)
+
+# Compatibilidad con el JavaScript existente:
+# el gráfico diario usa CURVA_EXCEL_DAILY.
+text = replace_const(text, "CURVA_EXCEL_DAILY", curva["daily"])
 
 # Build marker guarantees a visible content change for Git when data changes.
 marker = f"<!-- DASHBOARD_BUILD: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} -->"
