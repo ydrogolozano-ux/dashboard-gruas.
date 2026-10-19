@@ -1,4 +1,4 @@
-<!-- DASHBOARD_BUILD: 2026-10-19 14:16:03 -->
+<!-- DASHBOARD_BUILD: 2026-10-19 14:31:40 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1385,7 +1385,34 @@ document.querySelectorAll(".tab-button").forEach(btn=>{
 // esos valores tienen prioridad sobre localStorage/cookies del navegador receptor.
 function copySharedViewLink(){
   const btn=document.getElementById("shareViewBtn");
+
+  // Captura la vista REAL que está en pantalla justo al compartir.
+  // Así el enlace incluye los últimos filtros aunque algún control no haya
+  // disparado todavía su evento de guardado.
+  const activeTab=document.querySelector(".tab-button.active")?.dataset.tab
+    || loadUIState().activeTab
+    || "produccion";
+  const slider=document.getElementById("dateSlider");
+  const selectedDate=(slider && state.dates[Number(slider.value)])
+    || state.dates[state.selectedIndex]
+    || "";
+
+  const snapshot={
+    selectedDate,
+    activeTab,
+    sStart:document.getElementById("sStart")?.value || "",
+    sEnd:document.getElementById("sEnd")?.value || "",
+    sCutoff:document.getElementById("sCutoff")?.value || "",
+    pStart:document.getElementById("pStart")?.value || "",
+    pEnd:document.getElementById("pEnd")?.value || "",
+    weeklyStart:document.getElementById("weeklyStart")?.value || "",
+    weeklyEnd:document.getElementById("weeklyEnd")?.value || ""
+  };
+
+  // Guarda en el navegador y actualiza la URL antes de copiarla.
+  saveUIState(snapshot);
   const url=window.location.href;
+
   const done=()=>{
     if(!btn)return;
     const original=btn.innerHTML;
