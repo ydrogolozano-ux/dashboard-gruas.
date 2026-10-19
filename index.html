@@ -1,4 +1,4 @@
-<!-- DASHBOARD_BUILD: 2026-10-19 13:50:29 -->
+<!-- DASHBOARD_BUILD: 2026-10-19 14:16:03 -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -2299,11 +2299,16 @@ function initWeeklyCollapsible(){
 function initCurvaS(){
   const saved=loadUIState();
   const valid=d=>isValidDateIn(CURVA_DATA.dates,d);
+  // Si el Excel amplía el cierre de la Curva "S", actualizamos automáticamente
+  // Fecha final y Fecha de corte al nuevo último día. Si no cambió el cierre,
+  // se conservan los filtros guardados por el usuario.
+  const endpointChanged = saved._curveEndpoint !== CURVA_DATA.defaultEnd;
   const sStart=valid(saved.sStart)?saved.sStart:CURVA_DATA.defaultStart;
-  const sEnd=valid(saved.sEnd)?saved.sEnd:CURVA_DATA.defaultEnd;
-  const sCutoff=valid(saved.sCutoff)?saved.sCutoff:CURVA_DATA.defaultEnd;
+  const sEnd=endpointChanged?CURVA_DATA.defaultEnd:(valid(saved.sEnd)?saved.sEnd:CURVA_DATA.defaultEnd);
+  const sCutoff=endpointChanged?CURVA_DATA.defaultEnd:(valid(saved.sCutoff)?saved.sCutoff:CURVA_DATA.defaultEnd);
   const pStart=valid(saved.pStart)?saved.pStart:CURVA_DATA.defaultStart;
-  const pEnd=valid(saved.pEnd)?saved.pEnd:CURVA_DATA.defaultEnd;
+  const pEnd=endpointChanged?CURVA_DATA.defaultEnd:(valid(saved.pEnd)?saved.pEnd:CURVA_DATA.defaultEnd);
+  if(endpointChanged) saveUIState({_curveEndpoint:CURVA_DATA.defaultEnd,sEnd:sEnd,sCutoff:sCutoff,pEnd:pEnd});
 
   fillDateSelect("sStart",sStart);
   fillDateSelect("sEnd",sEnd);

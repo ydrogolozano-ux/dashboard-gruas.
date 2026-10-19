@@ -262,3 +262,13 @@ print("DATA:", payload["range"][0], "->", payload["range"][1])
 print("Fechas:", len(dates))
 print("DM/Usage:", len(dm_usage))
 print("Curva S:", len(curve_dates), "puntos")
+if curve_dates:
+    end = curve_dates[-1]
+    end_values = next((p for p in curve_daily if p["date"] == end), {})
+    print("Cierre Curva S:", end)
+    print("Target diario al cierre:", end_values.get("target"))
+    print("Reales al cierre:", {
+        "Camión Grúa 23 TN": end_values.get("Camión Grúa 23 TN"),
+        "Grua Semitrailer 20 TN": end_values.get("Grua Semitrailer 20 TN"),
+        "Tadano 60 TN": end_values.get("Tadano 60 TN"),
+    })
