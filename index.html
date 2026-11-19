@@ -597,6 +597,42 @@ svg text{font-family:var(--font)}
 .report-target-legend{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#0f2747;margin-top:10px}
 .report-target-legend i{display:inline-block;width:22px;border-top:3px dashed #0f2747}
 
+
+/* ---------- Reporte semanal · panel ejecutivo (gerencia) ---------- */
+#tab-reporte-semanal .report-weekly-kpis .kpi-card{display:flex;flex-direction:column}
+.report-kpi-meter{margin-top:auto;padding-top:10px}
+.report-kpi-meter-top{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-weight:700;margin-bottom:5px}
+.report-kpi-meter-top b{color:var(--navy);font-variant-numeric:tabular-nums}
+.report-kpi-track{height:6px;border-radius:99px;background:#eef1f5;overflow:hidden}
+.report-kpi-track i{display:block;height:100%;border-radius:99px;transition:width .35s ease}
+.report-exec-grid{display:grid;grid-template-columns:minmax(280px,.82fr) minmax(420px,1.18fr);gap:16px;margin:0 0 16px}
+.report-gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:4px}
+.report-gauge-wrap svg{width:100%;max-width:300px;height:auto;display:block}
+.report-gauge-value{font-size:34px;font-weight:800;fill:var(--navy);font-variant-numeric:tabular-nums}
+.report-gauge-caption{font-size:10px;font-weight:800;fill:#667085;letter-spacing:.6px}
+.report-gauge-status{display:inline-block;padding:5px 12px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.4px}
+.report-gauge-status.ok{background:#e8f7ef;color:#159957}.report-gauge-status.warn{background:#fff6e5;color:#b54708}.report-gauge-status.bad{background:#feeceb;color:#d92d20}.report-gauge-status.na{background:#eef2f7;color:#475467}
+.report-gauge-facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%;margin-top:10px}
+.report-gauge-fact{border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:#f8fafc}
+.report-gauge-fact span{display:block;font-size:9.5px;font-weight:800;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
+.report-gauge-fact strong{display:block;font-size:15px;color:var(--navy);margin-top:3px;font-variant-numeric:tabular-nums}
+.report-exec-summary{width:100%;margin-top:10px;font-size:11.5px;line-height:1.55;color:#344054;background:#f5f8fc;border-left:3px solid var(--navy);border-radius:6px;padding:9px 12px}
+.report-daily-chart svg{width:100%;height:auto;display:block}
+.report-daily-chart text{font-family:inherit}
+.report-daily-chart .bar-seg{transition:opacity .15s}
+.report-daily-chart .bar-seg:hover{opacity:.8}
+.report-equipment-row{grid-template-columns:minmax(125px,190px) 1fr 74px}
+.report-equipment-chart{gap:26px;padding-top:26px}
+.report-target-marker{top:-4px;bottom:-4px}
+.report-target-marker:before{display:none}
+.report-equipment-total{text-align:left;margin-top:7px}
+.report-compliance-chip{justify-self:end;text-align:center;border-radius:8px;padding:5px 8px;min-width:62px}
+.report-compliance-chip strong{display:block;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.report-compliance-chip span{display:block;font-size:8.5px;font-weight:800;letter-spacing:.4px;opacity:.85}
+.report-compliance-chip.ok{background:#e8f7ef;color:#159957}.report-compliance-chip.warn{background:#fff6e5;color:#b54708}.report-compliance-chip.bad{background:#feeceb;color:#d92d20}.report-compliance-chip.na{background:#eef2f7;color:#475467}
+@media(max-width:950px){.report-exec-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.report-equipment-row{grid-template-columns:105px 1fr 64px}}
+@media print{.header .nav,.report-weekly-controls,.report-comment-actions{display:none!important}.card,.report-visual-card,.kpi-card{break-inside:avoid}}
 </style>
 </head>
 <body>
@@ -1063,22 +1099,47 @@ svg text{font-family:var(--font)}
       <div class="kpi-icon">⚙</div>
       <div><div class="kpi-label">Horas de producción</div><div class="kpi-value" id="reportProduction">0.00 h</div></div>
       <div class="kpi-note">Horas efectivas acumuladas</div>
+      <div class="report-kpi-meter"><div class="report-kpi-meter-top"><span>% del total</span><b id="reportProductionPct">0.0%</b></div><div class="report-kpi-track"><i id="reportProductionBar" style="width:0;background:#159957"></i></div></div>
     </div>
     <div class="kpi-card kpi-standby">
       <div class="kpi-icon">Ⅱ</div>
       <div><div class="kpi-label">Horas Stand By</div><div class="kpi-value" id="reportStandby">0.00 h</div></div>
       <div class="kpi-note">Horas acumuladas del período</div>
+      <div class="report-kpi-meter"><div class="report-kpi-meter-top"><span>% del total</span><b id="reportStandbyPct">0.0%</b></div><div class="report-kpi-track"><i id="reportStandbyBar" style="width:0;background:#f47b2a"></i></div></div>
     </div>
     <div class="kpi-card kpi-unavailable">
       <div class="kpi-icon">!</div>
       <div><div class="kpi-label">Horas no disponibles</div><div class="kpi-value" id="reportUnavailable">0.00 h</div></div>
       <div class="kpi-note">Horas acumuladas del período</div>
+      <div class="report-kpi-meter"><div class="report-kpi-meter-top"><span>% del total</span><b id="reportUnavailablePct">0.0%</b></div><div class="report-kpi-track"><i id="reportUnavailableBar" style="width:0;background:#d92d20"></i></div></div>
     </div>
     <div class="kpi-card kpi-unplanned">
       <div class="kpi-icon">↗</div>
       <div><div class="kpi-label">Horas no programadas</div><div class="kpi-value" id="reportUnplanned">0.00 h</div></div>
       <div class="kpi-note">Horas acumuladas del período</div>
+      <div class="report-kpi-meter"><div class="report-kpi-meter-top"><span>% del total</span><b id="reportUnplannedPct">0.0%</b></div><div class="report-kpi-track"><i id="reportUnplannedBar" style="width:0;background:#7c3aed"></i></div></div>
     </div>
+  </section>
+
+  <section class="report-exec-grid">
+    <article class="report-visual-card">
+      <div class="report-visual-head">
+        <div><div class="card-kicker">INDICADOR CLAVE</div><h2>Cumplimiento de producción vs target</h2></div>
+      </div>
+      <div class="report-gauge-wrap" id="reportGauge"></div>
+    </article>
+    <article class="report-visual-card">
+      <div class="report-visual-head">
+        <div><div class="card-kicker">TENDENCIA DEL PERÍODO</div><h2>Horas por día y estado</h2></div>
+        <span class="mini-total" id="reportDailyDays">0 días</span>
+      </div>
+      <div class="report-daily-chart" id="reportDailyChart"></div>
+      <div class="report-chart-legend">
+        <span><i style="background:#159957"></i>Producción</span><span><i style="background:#f47b2a"></i>Stand By</span>
+        <span><i style="background:#d92d20"></i>No disponibles</span><span><i style="background:#7c3aed"></i>No programadas</span>
+        <span><i style="background:none;border-top:2px dashed #0f2747;border-radius:0;height:0;width:16px"></i>Target de producción (flota)</span>
+      </div>
+    </article>
   </section>
 
   <section class="report-visual-grid">
@@ -2671,8 +2732,10 @@ function renderWeeklyReport(){
   document.getElementById("reportEquipmentChart").innerHTML=selectedEquipment.length?selectedEquipment.map((eq,index)=>{
     const segments=values.map((v,i)=>`<div class="report-stacked-segment" title="${v.label}: ${fmtHours(eq.rows[i])} h" style="width:${eq.rows[i]/chartScale*100}%;background:${v.color}"></div>`).join("");
     const targetMarker=targetAccumulated>0?`<span class="report-target-marker" style="left:${targetPosition}%">${index===0?`<span class="report-target-label">TARGET ${fmtHours(targetAccumulated)} h</span>`:""}</span>`:"";
-    return `<div class="report-equipment-item"><div class="report-equipment-row"><div class="report-equipment-name">${escapeHtml(eq.name)}</div><div><div class="report-track-wrap"><div class="report-stacked-track">${segments}</div>${targetMarker}</div><div class="report-equipment-total">${fmtHours(eq.total)} h acumuladas · Producción ${fmtHours(eq.rows[0])} h</div></div></div></div>`;
+    return `<div class="report-equipment-item"><div class="report-equipment-row"><div class="report-equipment-name">${escapeHtml(eq.name)}</div><div><div class="report-track-wrap"><div class="report-stacked-track">${segments}</div>${targetMarker}</div><div class="report-equipment-total">${fmtHours(eq.total)} h acumuladas · Producción ${fmtHours(eq.rows[0])} h</div></div>${reportComplianceChip(eq.rows[0],targetAccumulated)}</div></div>`;
   }).join("")+(targetAccumulated>0?'<div class="report-target-legend"><i></i> TARGET ACUMULADO · '+fmtHours(targetAccumulated)+' h (solo producción)</div>':""):'<div class="empty">No hay horas por equipo para el período seleccionado.</div>';
+
+  renderReportExecutive({start:s,end:e,dates,values,total,production,selectedEquipment,targetAccumulated});
 
   const observations=(REPORT_OBSERVATIONS||[]).filter(r=>r.date>=s&&r.date<=e)
     .sort((a,b)=>a.date.localeCompare(b.date)||String(a.equipo).localeCompare(String(b.equipo)));
@@ -2687,6 +2750,99 @@ function renderWeeklyReport(){
     return `<article class="report-observation-card ${statusClass}"><div class="report-observation-top"><span class="report-observation-date">${escapeHtml(reportDateLabel(r.date))}</span><span class="report-status ${statusClass}">${escapeHtml(statusLabel)}</span></div><div class="report-observation-equipment">${escapeHtml(r.equipo||"Equipo no especificado")}</div><div class="report-observation-activity">${escapeHtml(r.actividad||"Actividad no especificada")}</div><div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px"><div class="report-observation-note">${escapeHtml(r.observaciones||"Sin observación")}</div><strong class="report-observation-hours" style="color:${color}">${Number.isFinite(hours)?fmtHours(hours)+" h":"—"}</strong></div></article>`;
   }).join("");
   renderReportCommentHistory();
+}
+
+// ---------- Reporte semanal · panel ejecutivo (solo visualización) ----------
+function reportComplianceClass(pct){
+  if(pct===null||!isFinite(pct))return "na";
+  return pct>=100?"ok":(pct>=85?"warn":"bad");
+}
+function reportComplianceChip(prod,target){
+  const pct=target>0?prod/target*100:null;
+  const cls=reportComplianceClass(pct);
+  return `<div class="report-compliance-chip ${cls}" title="Producción ${fmtHours(prod)} h vs target ${fmtHours(target)} h"><strong>${pct===null?"—":pct.toFixed(0)+"%"}</strong><span>VS TARGET</span></div>`;
+}
+function renderReportExecutive(ctx){
+  const {start,end,dates,values,total,production,selectedEquipment,targetAccumulated}=ctx;
+  // KPIs: % de participación sobre el total de horas
+  const ids={PRODUCCION:"reportProduction",STAND_BY:"reportStandby",NO_DISPONIBLE:"reportUnavailable",NO_PROGRAMADO:"reportUnplanned"};
+  values.forEach(v=>{
+    const pct=total>0?v.value/total*100:0;
+    const t=document.getElementById(ids[v.key]+"Pct"), b=document.getElementById(ids[v.key]+"Bar");
+    if(t)t.textContent=pct.toFixed(1)+"%";
+    if(b)b.style.width=Math.min(100,pct)+"%";
+  });
+
+  // Medidor: producción de la flota vs target (target diario por grúa × grúas con registros)
+  const nEq=selectedEquipment.length;
+  const fleetTarget=targetAccumulated*nEq;
+  const pct=fleetTarget>0?production/fleetTarget*100:null;
+  const cls=reportComplianceClass(pct);
+  const colors={ok:"#159957",warn:"#f59e0b",bad:"#d92d20",na:"#98a2b3"};
+  const statusTxt={ok:"META CUMPLIDA",warn:"CERCA DE LA META",bad:"POR DEBAJO DE LA META",na:"SIN TARGET EN EL PERÍODO"};
+  const R=100,cx=130,cy=125;
+  const frac=pct===null?0:Math.max(0,Math.min(1,pct/100));
+  const arc=f=>{const a=Math.PI*(1-f);return [cx+R*Math.cos(a),cy-R*Math.sin(a)];};
+  const [x1,y1]=arc(0),[x2,y2]=arc(frac),[xe,ye]=arc(1);
+  const ticks=[0,.25,.5,.75,1].map(f=>{const a=Math.PI*(1-f);const r1=R+14,r2=R+20;return `<line x1="${cx+r1*Math.cos(a)}" y1="${cy-r1*Math.sin(a)}" x2="${cx+r2*Math.cos(a)}" y2="${cy-r2*Math.sin(a)}" stroke="#c4ccd8" stroke-width="2"/><text x="${cx+(R+32)*Math.cos(a)}" y="${cy-(R+32)*Math.sin(a)+4}" text-anchor="middle" font-size="9" fill="#98a2b3" font-weight="700">${f*100}%</text>`;}).join("");
+  // Producción con mayor stand by / observación ejecutiva
+  const sbIdx=values.findIndex(v=>v.key==="STAND_BY");
+  const topSb=selectedEquipment.slice().sort((a,b)=>b.rows[sbIdx]-a.rows[sbIdx])[0];
+  const best=selectedEquipment.slice().sort((a,b)=>b.rows[0]-a.rows[0])[0];
+  const pctProd=total>0?production/total*100:0;
+  let summary=`En el período se registraron <b>${fmtHours(total)} h</b>, de las cuales el <b>${pctProd.toFixed(1)}%</b> fueron de producción.`;
+  if(pct!==null) summary+=` La flota alcanzó el <b>${pct.toFixed(1)}%</b> del target de producción.`;
+  if(best) summary+=` Mayor producción: <b>${escapeHtml(best.name)}</b> (${fmtHours(best.rows[0])} h).`;
+  if(topSb&&topSb.rows[sbIdx]>0) summary+=` Mayor Stand By: <b>${escapeHtml(topSb.name)}</b> (${fmtHours(topSb.rows[sbIdx])} h).`;
+  document.getElementById("reportGauge").innerHTML=`
+    <svg viewBox="-34 -26 328 176" role="img" aria-label="Cumplimiento de producción">
+      <path d="M ${x1} ${y1} A ${R} ${R} 0 0 1 ${xe} ${ye}" fill="none" stroke="#eef1f5" stroke-width="22" stroke-linecap="round"/>
+      ${frac>0?`<path d="M ${x1} ${y1} A ${R} ${R} 0 0 1 ${x2} ${y2}" fill="none" stroke="${colors[cls]}" stroke-width="22" stroke-linecap="round"/>`:""}
+      ${ticks}
+      <text x="${cx}" y="${cy-14}" text-anchor="middle" class="report-gauge-value">${pct===null?"—":pct.toFixed(1)+"%"}</text>
+      <text x="${cx}" y="${cy+6}" text-anchor="middle" class="report-gauge-caption">PRODUCCIÓN / TARGET</text>
+    </svg>
+    <span class="report-gauge-status ${cls}">${statusTxt[cls]}</span>
+    <div class="report-gauge-facts">
+      <div class="report-gauge-fact"><span>Producción real</span><strong>${fmtHours(production)} h</strong></div>
+      <div class="report-gauge-fact"><span>Target flota (${nEq} grúa${nEq===1?"":"s"})</span><strong>${fmtHours(fleetTarget)} h</strong></div>
+    </div>
+    <div class="report-exec-summary">${summary}</div>`;
+
+  // Columnas apiladas por día
+  const eqByDate=PAYLOAD.equipmentHours||{};
+  const targetByDate={};(CURVA_EXCEL_DAILY||[]).forEach(r=>{targetByDate[r.date]=Number(r.target)||0;});
+  const days=dates.map(d=>{
+    const prod=Number(PAYLOAD.production[d])||0;
+    const st=k=>((PAYLOAD.data[d]&&PAYLOAD.data[d][k])||[]).reduce((a,r)=>a+(Number(r.horas)||0),0);
+    const parts=[prod,st("STAND_BY"),st("NO_DISPONIBLE"),st("NO_PROGRAMADO")];
+    const eqCount=Object.values(eqByDate[d]||{}).filter(all=>Object.values(all).some(v=>Number(v)>0)).length;
+    const tgt=(targetByDate[d]||0)*eqCount;
+    return {d,parts,total:parts.reduce((a,b)=>a+b,0),tgt};
+  });
+  document.getElementById("reportDailyDays").textContent=days.length+(days.length===1?" día":" días");
+  const host=document.getElementById("reportDailyChart");
+  if(!days.length){host.innerHTML='<div class="empty">No hay registros en el período seleccionado.</div>';return;}
+  const W=640,H=260,pl=38,pr=10,pt=22,pb=34,cw=W-pl-pr,ch=H-pt-pb;
+  const maxV=Math.max(1,...days.map(x=>Math.max(x.total,x.tgt)));
+  const step=maxV<=12?2:maxV<=30?5:maxV<=60?10:maxV<=150?25:50;
+  const top=Math.ceil(maxV/step)*step;
+  const y=v=>pt+ch-(v/top*ch);
+  const slot=cw/days.length, bw=Math.min(46,slot*.62);
+  let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Horas por día">`;
+  for(let v=0;v<=top;v+=step){svg+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="#eef1f5"/><text x="${pl-6}" y="${y(v)+3}" text-anchor="end" font-size="9" fill="#98a2b3">${v}</text>`;}
+  const showVals=days.length<=16, labelEvery=Math.ceil(days.length/16);
+  days.forEach((x,i)=>{
+    const cx0=pl+slot*i+slot/2, x0=cx0-bw/2;
+    let acc=0;
+    x.parts.forEach((v,k)=>{ if(v<=0)return; const y1=y(acc+v), hh=y(acc)-y1; svg+=`<rect class="bar-seg" x="${x0}" y="${y1}" width="${bw}" height="${Math.max(0,hh)}" fill="${values[k].color}" ${k===x.parts.length-1||acc+v>=x.total?'rx="2"':''}><title>${reportDateLabel(x.d)} · ${values[k].label}: ${fmtHours(v)} h</title></rect>`; acc+=v; });
+    if(x.tgt>0) svg+=`<line x1="${x0-4}" x2="${x0+bw+4}" y1="${y(x.tgt)}" y2="${y(x.tgt)}" stroke="#0f2747" stroke-width="2" stroke-dasharray="4 3"><title>Target producción: ${fmtHours(x.tgt)} h</title></line>`;
+    if(showVals) svg+=`<text x="${cx0}" y="${y(Math.max(x.total,x.tgt))-6}" text-anchor="middle" font-size="9.5" font-weight="800" fill="#0f2747">${x.total.toFixed(1)}</text>`;
+    if(i%labelEvery===0){const dt=new Date(x.d+"T00:00:00");const lab=String(dt.getDate()).padStart(2,"0")+"/"+String(dt.getMonth()+1).padStart(2,"0");const wd=["DOM","LUN","MAR","MIÉ","JUE","VIE","SÁB"][dt.getDay()];
+      svg+=`<text x="${cx0}" y="${H-pb+14}" text-anchor="middle" font-size="9.5" font-weight="700" fill="#344054">${lab}</text><text x="${cx0}" y="${H-pb+26}" text-anchor="middle" font-size="8" fill="#98a2b3">${wd}</text>`;}
+  });
+  svg+=`<line x1="${pl}" x2="${W-pr}" y1="${y(0)}" y2="${y(0)}" stroke="#c4ccd8"/></svg>`;
+  host.innerHTML=svg;
 }
 function initWeeklyReport(){
   const dates=PAYLOAD.dates||[];
