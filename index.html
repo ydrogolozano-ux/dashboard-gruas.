@@ -634,8 +634,40 @@ svg text{font-family:var(--font)}
 @media(max-width:650px){.report-equipment-row{grid-template-columns:105px 1fr 64px}}
 @media print{.header .nav,.report-weekly-controls,.report-comment-actions{display:none!important}.card,.report-visual-card,.kpi-card{break-inside:avoid}}
 </style>
+
+<style id="supabase-auth-styles">
+body.auth-locked > *:not(#supabaseAuthGate){visibility:hidden!important}
+#supabaseAuthGate{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(9,24,43,.72);font-family:Arial,sans-serif}
+#supabaseAuthGate[hidden]{display:none!important}
+.sa-card{width:min(430px,100%);background:#fff;border-radius:16px;padding:28px;box-shadow:0 24px 70px rgba(0,0,0,.25);color:#172b45}
+.sa-card h2{margin:0 0 8px;font-size:22px}.sa-card p{margin:0 0 20px;color:#667085;font-size:14px;line-height:1.5}
+.sa-card label{display:block;margin:13px 0 6px;font-size:13px;font-weight:700}.sa-card input{box-sizing:border-box;width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;font-size:15px}
+.sa-card button{border:0;border-radius:8px;background:#147d50;color:#fff;font-weight:700;padding:12px 16px;cursor:pointer}.sa-card button:disabled{opacity:.6;cursor:wait}
+#saLoginBtn{width:100%;margin-top:18px}.sa-status{min-height:20px;margin-top:12px;font-size:13px;color:#b42318}
+#supabaseUserBar{position:fixed;z-index:99990;top:10px;right:12px;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #d0d5dd;border-radius:10px;padding:7px 10px;box-shadow:0 2px 8px #0001;font:12px Arial,sans-serif;color:#344054}
+#supabaseUserBar[hidden]{display:none!important}#supabaseUserBar button{border:1px solid #d0d5dd;background:#fff;color:#344054;border-radius:6px;padding:6px 8px;cursor:pointer}
+.report-history-author{font-weight:700;color:#344054;margin-top:4px;font-size:11px}
+@media(max-width:600px){#supabaseUserBar{top:6px;right:6px;max-width:95vw;flex-wrap:wrap}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
 <body>
+
+<div id="supabaseAuthGate" hidden>
+  <form class="sa-card" id="saLoginForm">
+    <h2>Acceso al Dashboard de Grúas</h2>
+    <p>Ingresa con el correo electrónico al que recibiste la invitación y tu contraseña. Si es tu primer ingreso, abre el enlace de invitación enviado a tu correo.</p>
+    <label for="saEmail">Correo electrónico</label>
+    <input id="saEmail" type="email" autocomplete="username" required placeholder="nombre@empresa.com">
+    <label for="saPassword">Contraseña</label>
+    <input id="saPassword" type="password" autocomplete="current-password" required placeholder="Tu contraseña">
+    <button id="saLoginBtn" type="submit">Iniciar sesión</button>
+    <div id="saLoginStatus" class="sa-status" role="status" aria-live="polite"></div>
+  </form>
+</div>
+<div id="supabaseUserBar" hidden><span id="saUserEmail">Modo de consulta</span><button type="button" id="saOpenLogin">Iniciar sesión</button><button type="button" id="saChangePassword" hidden>Crear/cambiar contraseña</button><button type="button" id="saLogout" hidden>Cerrar sesión</button></div>
+
 <header class="header">
   <div class="title">REPORTE DIARIO DE GRÚAS</div>
   <div class="nav">
@@ -1205,7 +1237,7 @@ svg text{font-family:var(--font)}
     </div>
   </section>
   <div class="footer-note">
-    <b>Fuente:</b> hoja DATA del archivo DATA GRUAS. Las observaciones se extraen de la columna Y. Los comentarios se guardan en el almacenamiento local del navegador utilizado para abrir el dashboard.
+    <b>Fuente:</b> hoja DATA del archivo DATA GRUAS. Las observaciones se extraen de la columna Y. Los comentarios se guardan en Supabase y se sincronizan entre los usuarios autorizados del dashboard.
   </div>
 </div>
 
@@ -2668,7 +2700,7 @@ function renderReportCommentHistory(){
   }
   host.innerHTML=entries.map(x=>{
     const when=x.savedAt?new Date(x.savedAt).toLocaleString("es-PE"):"Fecha no disponible";
-    return `<article class="report-history-item"><div class="report-history-meta">${escapeHtml(reportDateLabel(x.start))} – ${escapeHtml(reportDateLabel(x.end))} · Registrado: ${escapeHtml(when)}</div><div class="report-history-text">${escapeHtml(x.comment||"")}</div></article>`;
+    return `<article class="report-history-item"><div class="report-history-meta">${escapeHtml(reportDateLabel(x.start))} – ${escapeHtml(reportDateLabel(x.end))} · Registrado: ${escapeHtml(when)}</div><div class="report-history-author">Autor: ${escapeHtml(x.authorEmail||"Usuario autorizado")}</div><div class="report-history-text">${escapeHtml(x.comment||"")}</div></article>`;
   }).join("");
 }
 function renderWeeklyReport(){
@@ -2932,5 +2964,118 @@ initCurvaS();
   }
 })();
 </script>
+
+<script id="supabase-dashboard-integration">
+(function(){
+  const SUPABASE_URL = 'https://kskxpkiractlickkrfsx.supabase.co';
+  const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_1kAk0SGXDAPo4WDv1YB3rw_XBWfG1xv';
+  const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  const gate = document.getElementById('supabaseAuthGate');
+  const loginForm = document.getElementById('saLoginForm');
+  const loginStatus = document.getElementById('saLoginStatus');
+  const loginBtn = document.getElementById('saLoginBtn');
+  const userBar = document.getElementById('supabaseUserBar');
+  const userEmail = document.getElementById('saUserEmail');
+  const LOCAL_KEY = 'dashboard_gruas_reporte_semanal_comentarios_v1';
+  const MIGRATION_KEY = 'dashboard_gruas_supabase_comments_migrated_v1';
+  let currentSession = null;
+  let cloudSaveBound = false;
+  let migrationPromise = null;
+
+  function status(message, isError=true){ loginStatus.textContent=message; loginStatus.style.color=isError?'#b42318':'#067647'; }
+  function setAuthenticated(session){
+    currentSession=session;
+    if(session){
+      document.body.classList.remove('auth-locked'); gate.hidden=true; userBar.hidden=false;
+      userEmail.textContent=session.user.email || 'Usuario autorizado';
+      document.getElementById('saOpenLogin').hidden=true;
+      document.getElementById('saChangePassword').hidden=false;
+      document.getElementById('saLogout').hidden=false;
+      syncCommentsFromCloud(); bindCloudSave();
+    } else {
+      currentSession=null;
+      document.body.classList.remove('auth-locked');
+      gate.hidden=true;
+      // El dashboard es de consulta pública: no mostrar controles de acceso al visitante.
+      userBar.hidden=true;
+      document.getElementById('saOpenLogin').hidden=false;
+      document.getElementById('saChangePassword').hidden=true;
+      document.getElementById('saLogout').hidden=true;
+      syncCommentsFromCloud();
+      bindCloudSave();
+    }
+  }
+  async function migrateLegacyComments(){
+    if(localStorage.getItem(MIGRATION_KEY)==='yes')return;
+    if(migrationPromise)return migrationPromise;
+    migrationPromise=(async()=>{
+    let legacy=[];
+    try{legacy=JSON.parse(localStorage.getItem(LOCAL_KEY)||'[]');}catch(_e){}
+    if(!Array.isArray(legacy)||!legacy.length){localStorage.setItem(MIGRATION_KEY,'yes');return;}
+    const rows=legacy.slice(-150).filter(x=>x.start&&x.end&&x.comment).map(x=>({start_date:x.start,end_date:x.end,comment:x.comment,user_id:currentSession.user.id,author_email:currentSession.user.email||null,created_at:x.savedAt||new Date().toISOString()}));
+    if(!rows.length){localStorage.setItem(MIGRATION_KEY,'yes');return;}
+    const {error}=await client.from('report_comments').insert(rows);
+    if(!error)localStorage.setItem(MIGRATION_KEY,'yes');
+    })();
+    try{await migrationPromise;}finally{migrationPromise=null;}
+  }
+  async function syncCommentsFromCloud(){
+    // Lectura pública para que cualquier persona con el enlace pueda consultar el historial.
+    // La migración de comentarios locales solo se ejecuta cuando el administrador inicia sesión.
+    if(currentSession) await migrateLegacyComments();
+    const {data,error}=await client.from('report_comments').select('id,start_date,end_date,comment,created_at,user_id,author_email').order('created_at',{ascending:false}).limit(150);
+    if(error){
+      const st=document.getElementById('reportSaveStatus'); if(st){st.style.color='#d92d20';st.textContent='No se pudieron cargar los comentarios compartidos: '+error.message;}
+      return;
+    }
+    const rows=(data||[]).map(r=>({id:r.id,start:r.start_date,end:r.end_date,comment:r.comment,savedAt:r.created_at,userId:r.user_id,authorEmail:r.author_email||'Usuario autorizado'}));
+    localStorage.setItem(LOCAL_KEY,JSON.stringify(rows));
+    if(typeof renderReportCommentHistory==='function')renderReportCommentHistory();
+    if(typeof loadReportCommentDraft==='function')loadReportCommentDraft();
+  }
+  function bindCloudSave(){
+    if(cloudSaveBound)return;
+    const btn=document.getElementById('reportSaveComment'); if(!btn)return;
+    cloudSaveBound=true;
+    btn.addEventListener('click',async function(ev){
+      ev.preventDefault(); ev.stopImmediatePropagation();
+      const statusEl=document.getElementById('reportSaveStatus');
+      const {start,end}=reportSelectedDates();
+      const comment=document.getElementById('reportComment').value.trim();
+      if(!comment){statusEl.style.color='#d92d20';statusEl.textContent='Escribe un comentario antes de guardar.';return;}
+      if(!currentSession){statusEl.style.color='#b54708';statusEl.textContent='Solo el administrador puede registrar comentarios. Inicia sesión para continuar.';gate.hidden=false;return;}
+      btn.disabled=true; statusEl.style.color='#667085';statusEl.textContent='Guardando comentario compartido…';
+      const payload={start_date:start,end_date:end,comment,user_id:currentSession.user.id,author_email:currentSession.user.email||null};
+      const {error}=await client.from('report_comments').insert(payload);
+      btn.disabled=false;
+      if(error){statusEl.style.color='#d92d20';statusEl.textContent='No se pudo guardar: '+error.message;return;}
+      statusEl.style.color='#159957';statusEl.textContent='Comentario guardado y compartido correctamente.';
+      await syncCommentsFromCloud();
+    },true);
+  }
+  document.getElementById('saOpenLogin').addEventListener('click',()=>{gate.hidden=false;document.getElementById('saEmail').focus();});
+  gate.addEventListener('click',ev=>{if(ev.target===gate)gate.hidden=true;});
+  loginForm.addEventListener('submit',async function(ev){
+    ev.preventDefault(); loginBtn.disabled=true; status('Verificando acceso…',false);
+    const email=document.getElementById('saEmail').value.trim();
+    const password=document.getElementById('saPassword').value;
+    const {data,error}=await client.auth.signInWithPassword({email,password});
+    loginBtn.disabled=false;
+    if(error){status('No se pudo iniciar sesión. Verifica tu correo y contraseña, o confirma que aceptaste la invitación.');return;}
+    status('Acceso correcto.',false); setAuthenticated(data.session);
+  });
+  document.getElementById('saLogout').addEventListener('click',async()=>{await client.auth.signOut();setAuthenticated(null);});
+  document.getElementById('saChangePassword').addEventListener('click',async()=>{
+    const password=prompt('Escribe una nueva contraseña (mínimo 8 caracteres):');
+    if(password===null)return;
+    if(password.length<8){alert('La contraseña debe tener al menos 8 caracteres.');return;}
+    const {error}=await client.auth.updateUser({password});
+    alert(error?'No se pudo actualizar la contraseña: '+error.message:'Contraseña actualizada correctamente.');
+  });
+  client.auth.onAuthStateChange((_event,session)=>{setAuthenticated(session);});
+  client.auth.getSession().then(({data})=>setAuthenticated(data.session));
+})();
+</script>
+
 </body>
 </html>
